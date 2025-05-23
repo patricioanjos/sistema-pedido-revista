@@ -1,11 +1,11 @@
-import { Button } from "antd"
+import OrderForm from "./components/OrderForm"
 
 function App() {
 
   return (
-    <Button>
-      Click
-    </Button>
+    <main className="container">
+      <OrderForm />
+    </main>
   )
 }
 
