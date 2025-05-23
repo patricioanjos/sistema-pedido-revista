@@ -17,12 +17,12 @@ export default function OrderForm() {
         axios.post(`${import.meta.env.VITE_BASE_URL}/orders`, values)
             .then(function (response) {
                 console.log(response.data);
-                message.success('Order submitted successfully!');
+                message.success('Pedido realizado com sucesso!');
                 form.resetFields();
             })
             .catch(function (error) {
                 console.error(error);
-                message.error('Failed to submit order.');
+                message.error('Falha ao enviar pedido.');
             });
     };
 
