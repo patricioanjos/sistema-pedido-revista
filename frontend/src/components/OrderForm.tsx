@@ -1,3 +1,4 @@
+import { EnvironmentOutlined, HomeOutlined, NumberOutlined, PhoneOutlined, ReadOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, message } from 'antd';
 import axios from 'axios'
 
@@ -32,10 +33,11 @@ export default function OrderForm() {
             onFinish={onHandleFinish}
             layout="vertical"
             initialValues={{ magazines: [{}] }}
-            // className='space-y-6'
+        // className='space-y-6'
         >
+            
             <Form.Item
-                label="Região"
+                label={<span className="font-semibold"><EnvironmentOutlined className="text-blue-500"/> Região</span>}
                 name="region"
                 rules={[{ required: true, message: 'Por favor, selecione a região' }]}
             >
@@ -52,7 +54,7 @@ export default function OrderForm() {
             </Form.Item>
 
             <Form.Item
-                label="Congregação"
+                label={<span className="font-semibold"><HomeOutlined className="text-purple-500"/> Congregação</span>}
                 name="congregation"
                 hasFeedback
                 rules={[{ required: true, message: 'Por favor, insira a congregação' }]}
@@ -61,7 +63,7 @@ export default function OrderForm() {
             </Form.Item>
 
             <Form.Item
-                label="Dirigente"
+                label={<span className="font-semibold"><UserOutlined className="text-emerald-500"/> Dirigente</span>}
                 name="leader"
                 rules={[{ required: true, message: 'Por favor, insira o nome do dirigente' }]}
             >
@@ -69,7 +71,7 @@ export default function OrderForm() {
             </Form.Item>
 
             <Form.Item
-                label="Líder do departamento"
+                label={<span className="font-semibold"><UserOutlined className="text-emerald-500"/> Líder do departamento</span>}
                 name="departmentHead"
                 rules={[{ required: true, message: 'Por favor, insira o nome do líder' }]}
             >
@@ -77,7 +79,7 @@ export default function OrderForm() {
             </Form.Item>
 
             <Form.Item
-                label="Telefones"
+                label={<span className="font-semibold"><PhoneOutlined className="text-green-500"/> Telefone</span>}
                 name="phone"
                 rules={[{ required: true, message: 'Por favor, insira o telefone' }]}
                 className="font-medium"
@@ -97,7 +99,7 @@ export default function OrderForm() {
                                     {...restField}
                                     name={[name, 'type']}
                                     rules={[{ required: true, message: '' }]}
-                                    label="Revista"
+                                    label={<span className="font-semibold"><ReadOutlined className="text-orange-500"/> Revista</span>}
                                     className="flex-1"
                                 >
                                     <Select
@@ -117,7 +119,7 @@ export default function OrderForm() {
                                     {...restField}
                                     name={[name, 'quantity']}
                                     rules={[{ required: true, message: '' }]}
-                                    label="Quantidade"
+                                    label={<span className="font-semibold"><NumberOutlined /> Quantidade</span>}
                                     className="font-medium"
                                 >
                                     <InputNumber min={1} placeholder="1" className="w-full" />
@@ -153,7 +155,9 @@ export default function OrderForm() {
                 <Button
                     type="primary"
                     htmlType="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="mt-8 h-10 w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700
+                hover:to-indigo-700 text-white font-semibold text-lg shadow-lg shadow-blue-500/25 
+                transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.02]"
                 >
                     Fazer Pedido
                 </Button>
