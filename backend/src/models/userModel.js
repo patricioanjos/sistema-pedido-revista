@@ -14,7 +14,7 @@ const userModel = {
                 throw new Error(error.message)
             }
 
-            return userData.session
+            return {session: userData.session, user: userData.user}
         } catch (error) {
             console.error(`Erro no login do modelo: ${error.message}`)
             throw error
