@@ -2,7 +2,34 @@ import sql from '../../db.js'
 
 const orderModel = {
     async getAllOrders() {
-        return await sql`SELECT * FROM pedidos`;
+        return await sql`
+      SELECT
+        p.id,
+        p.region,
+        p.congregation,
+        p.data,
+        p.leader,
+        p.department_head,
+        p.phone,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', ip.id,
+              'magazine', ip.magazine,
+              'quantity', ip.quantity
+            )
+          ) FILTER (WHERE ip.id IS NOT NULL),
+          '[]'::json
+        ) AS itens_pedido
+      FROM
+        pedidos AS p
+      LEFT JOIN
+        itens_pedido AS ip ON p.id = ip.order_id
+      GROUP BY
+        p.id, p.region, p.congregation, p.data, p.leader, p.department_head, p.phone
+      ORDER BY
+        p.id;
+    `;
     },
 
     async createOrder(orderData) {
