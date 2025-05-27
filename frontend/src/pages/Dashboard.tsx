@@ -1,8 +1,11 @@
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MagazineOrderCard from "../components/MagazineOrderCard";
 import axios from "axios";
 import type { Order } from "../types";
-import { Alert, Spin } from "antd";
+import { Alert, Collapse, Layout, Spin, Typography, type CollapseProps } from "antd";
+
+const { Title } = Typography;
+const { Content } = Layout;
 
 export default function Dashboard() {
     const [allOrders, setAllOrders] = useState<Order[]>([])
@@ -33,15 +36,11 @@ export default function Dashboard() {
         fetchOrders();
     }, []); // Array de dependências vazio: executa apenas uma vez no montante do componente
 
-    // Filtros dinâmicos. Use map ou reduce para criar um objeto de regiões,
-    // ou continue com filtros individuais se as regiões forem fixas e poucas.
-    // Garanta que a comparação de região seja case-insensitive.
     const eastOrders = allOrders.filter((order) => order.region?.toLowerCase() === 'leste');
     const northOrders = allOrders.filter((order) => order.region?.toLowerCase() === 'norte');
     const southOrders = allOrders.filter((order) => order.region?.toLowerCase() === 'sul');
-    // Você pode adicionar mais regiões aqui conforme necessário
 
-    // Calcular totais para o cabeçalho (Opcional, mas útil para o design original)
+    // Calcular totais para o cabeçalho
     const totalOrdersCount = allOrders.length;
     const totalMagazineCopies = allOrders.reduce((acc, order) => {
         // Garanta que 'itens_pedido' exista e seja um array
@@ -71,37 +70,84 @@ export default function Dashboard() {
         );
     }
 
-    return (
-        <main className="max-w-[105rem] mx-auto p-4">
-            <h1 className="text-4xl font-bold tracking-tight text-center mb-4">Pedidos de Revistas</h1>
+    // Criação dos itens do Collapse manualmente para cada região
+    const collapseItems: CollapseProps['items'] = [
 
-            <section id="east">
-                <div className="p-4 mb-4 rounded-lg border-2 bg-blue-50 border-blue-200 flex justify-between">
-                    Leste
-                    
-                    <p>{eastOrders.length} Congregações</p>
+        eastOrders.length > 0 && {
+            key: 'leste',
+            label: (
+                <div className="flex justify-between items-center h-16 px-3 bg-blue-50 border-2 border-blue-200 
+                rounded-lg">
+                    <h2 className="text-2xl font-semibold">Região Leste</h2>
+                    <p className="text-blue-600">{eastOrders.length} Pedidos</p>
                 </div>
-
-                <section className="flex gap-8">
-                    {eastOrders.map((order) => <MagazineOrderCard key={order.id} order={order} />)}
+            ),
+            children: (
+                <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
+                    {eastOrders.map((order: Order) => (
+                        <MagazineOrderCard order={order} key={order.id} />
+                    ))}
                 </section>
-            </section>
+            ),
+            className: 'mb-4',
+        },
 
-            <section id="north">
-                <div className="p-4 rounded-lg border-2 bg-green-50 border-green-200 mb-4">
-                    Norte
+        northOrders.length > 0 && {
+            key: 'norte',
+            label: (
+                <div className="flex justify-between items-center h-16 px-3 bg-green-50 border-2 border-green-200 
+                rounded-lg">
+                    <h2 className="text-2xl font-semibold">Região Norte</h2>
+                    <p className="text-green-600">{northOrders.length} Pedidos</p>
                 </div>
+            ),
+            children: (
+                <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
+                    {northOrders.map((order: Order) => (
+                        <MagazineOrderCard order={order} key={order.id}/>
+                    ))}
+                </section>
+            ),
+            className: 'mb-4',
+        },
 
-                {northOrders.map((order) => <MagazineOrderCard key={order.id} order={order} />)}
-            </section>
-
-            <section id="south">
-                <div className="p-4 rounded-lg border-2 bg-orange-50 border-orange-200 mb-4">
-                    Sul
+        southOrders.length > 0 && {
+            key: 'sul',
+            label: (
+                <div className="flex justify-between items-center h-16 px-3 bg-orange-50 border-2 border-orange-200 
+                rounded-lg">
+                    <h2 className="text-2xl font-semibold">Região Sul</h2>
+                    <p className="text-orange-600">{southOrders.length} Pedidos</p>
                 </div>
+            ),
+            children: (
+                <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
+                    {southOrders.map((order: Order) => (
+                        <MagazineOrderCard order={order} key={order.id} />
+                    ))}
+                </section>
+            ),
+            className: 'mb-4',
+        },
+    ].filter(Boolean) as CollapseProps['items']
 
-                {southOrders.map((order) => <MagazineOrderCard key={order.id} order={order} />)}
-            </section>
+    return (
+        <main className="min-h-screen">
+            <Title level={2} className="m-0 leading-[64px] text-center">
+                Pedidos de Revistas
+            </Title>
+
+
+            <Content>
+                {collapseItems.length > 0 ? (
+                    <Collapse
+                        items={collapseItems}
+                        ghost
+                    />
+                ) : (
+                    <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="mt-8" />
+                )}
+            </Content>
         </main>
-    )
+    );
 }
