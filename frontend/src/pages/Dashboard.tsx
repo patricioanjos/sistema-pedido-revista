@@ -139,7 +139,7 @@ export default function Dashboard() {
 
 
             <Content>
-                {collapseItems.length > 0 ? (
+                {collapseItems?.length ? (
                     <Collapse
                         items={collapseItems}
                         ghost
