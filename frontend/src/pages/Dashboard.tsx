@@ -3,6 +3,8 @@ import MagazineOrderCard from "../components/MagazineOrderCard";
 import axios from "axios";
 import type { Order } from "../types";
 import { Alert, Collapse, Layout, Spin, Typography, type CollapseProps } from "antd";
+import { calculateTotalCopies } from "../utils/calculateCopies";
+import { CodeSandboxOutlined, ReadOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 const { Content } = Layout;
@@ -40,14 +42,13 @@ export default function Dashboard() {
     const northOrders = allOrders.filter((order) => order.region?.toLowerCase() === 'norte');
     const southOrders = allOrders.filter((order) => order.region?.toLowerCase() === 'sul');
 
+    const totalEastMagazinesCopies = calculateTotalCopies(eastOrders)
+    const totalNorthMagazinesCopies = calculateTotalCopies(northOrders)
+    const totalSouthMagazinesCopies = calculateTotalCopies(southOrders)
+
     // Calcular totais para o cabeçalho
     const totalOrdersCount = allOrders.length;
-    const totalMagazineCopies = allOrders.reduce((acc, order) => {
-        // Garanta que 'itens_pedido' exista e seja um array
-        const orderItems = order.itens_pedido || [];
-        const orderCopies = orderItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-        return acc + orderCopies;
-    }, 0);
+
 
     if (loading) {
         return (
@@ -79,7 +80,10 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center h-16 px-3 bg-blue-50 border-2 border-blue-200 
                 rounded-lg">
                     <h2 className="text-2xl font-semibold">Região Leste</h2>
-                    <p className="text-blue-600">{eastOrders.length} Pedidos</p>
+                    <div className="space-x-4 text-gray-500 text-base">
+                        <span><CodeSandboxOutlined />{eastOrders.length} Pedidos</span>
+                        <span><ReadOutlined/> {totalEastMagazinesCopies} Cópias</span>
+                    </div>
                 </div>
             ),
             children: (
@@ -98,13 +102,16 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center h-16 px-3 bg-green-50 border-2 border-green-200 
                 rounded-lg">
                     <h2 className="text-2xl font-semibold">Região Norte</h2>
-                    <p className="text-green-600">{northOrders.length} Pedidos</p>
+                    <div className="space-x-4 text-gray-500 text-base">
+                        <span><CodeSandboxOutlined />{northOrders.length} Pedidos</span>
+                        <span><ReadOutlined/> {totalNorthMagazinesCopies} Cópias</span>
+                    </div>
                 </div>
             ),
             children: (
                 <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
                     {northOrders.map((order: Order) => (
-                        <MagazineOrderCard order={order} key={order.id}/>
+                        <MagazineOrderCard order={order} key={order.id} />
                     ))}
                 </section>
             ),
@@ -117,7 +124,10 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center h-16 px-3 bg-orange-50 border-2 border-orange-200 
                 rounded-lg">
                     <h2 className="text-2xl font-semibold">Região Sul</h2>
-                    <p className="text-orange-600">{southOrders.length} Pedidos</p>
+                    <div className="space-x-4 text-gray-500 text-base">
+                        <span><CodeSandboxOutlined />{southOrders.length} Pedidos</span>
+                        <span><ReadOutlined/> {totalSouthMagazinesCopies} Cópias</span>
+                    </div>
                 </div>
             ),
             children: (
@@ -147,6 +157,11 @@ export default function Dashboard() {
                 ) : (
                     <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="mt-8" />
                 )}
+
+                <section className="mt-12 p-6 bg-muted/50 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-4">Resumo</h3>
+                    <p>Total de pedidos: {totalOrdersCount}</p>
+                </section>
             </Content>
         </main>
     );
