@@ -3,6 +3,7 @@ import Login from "../pages/Login";
 import App from "../App";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/Dashboard";
+import SuccessPage from "../pages/SuccessPage";
 
 export default function Router() {
 
@@ -10,7 +11,7 @@ export default function Router() {
         <Routes>
             <Route path="/" index element={<App />} />
             <Route path="/login" element={<Login />} />
-
+            <Route path="/success" element={<SuccessPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/" element={<ProtectedRoute />}>
                 <Route path="settings" element={<div>Página de Configurações Protegida</div>} />
