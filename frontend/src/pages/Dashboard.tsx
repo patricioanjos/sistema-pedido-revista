@@ -118,9 +118,10 @@ export default function Dashboard() {
     const totalEastMagazinesCopies = calculateTotalCopies(eastOrders)
     const totalNorthMagazinesCopies = calculateTotalCopies(northOrders)
     const totalSouthMagazinesCopies = calculateTotalCopies(southOrders)
+    const totalMagazinesCopies = calculateTotalCopies(filteredOrders)
 
     // Calcular totais para o cabeçalho
-    const totalOrdersCount = allOrders.length;
+    const totalOrdersCount = filteredOrders.length;
 
 
     if (loading) {
@@ -257,9 +258,19 @@ export default function Dashboard() {
                     <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="mt-8" />
                 )}
 
-                <section className="mt-12 p-6 bg-muted/50 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">Resumo</h3>
-                    <p>Total de pedidos: {totalOrdersCount}</p>
+                <section className="mt-12 mx-4 p-6 bg-gray-100 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-4">Resumo do Trimestre</h3>
+
+                    <section className="flex gap-4">
+                        <div className="bg-white w-full h-28 rounded-lg flex flex-col justify-center items-center">
+                            <span className="text-2xl font-bold text-blue-600">{totalOrdersCount}</span>
+                            <p>Total de pedidos</p>
+                        </div>
+                        <div className="bg-white w-full h-28 rounded-lg flex flex-col justify-center items-center">
+                            <span className="text-2xl font-bold text-green-600">{totalMagazinesCopies}</span>
+                            <p>Total de revistas</p>
+                        </div>
+                    </section>
                 </section>
             </Content>
         </main>
