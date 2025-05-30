@@ -9,12 +9,12 @@ export default function Router() {
 
     return (
         <Routes>
-            <Route path="/" index element={<App />} />
+            <Route path="/" element={<App />} />
             <Route path="/login" element={<Login />} />
             <Route path="/success" element={<SuccessPage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/" element={<ProtectedRoute />}>
-                <Route path="settings" element={<div>Página de Configurações Protegida</div>} />
+
+            <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
             </Route>
         </Routes>
     )

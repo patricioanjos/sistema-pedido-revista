@@ -21,13 +21,13 @@ export default function LoginForm() {
 
     const onHandleFinish: FormProps<FieldType>['onFinish'] = (values) => {
         axios.post(`${import.meta.env.VITE_BASE_URL}/login`, values)
-            .then(function (response) {
+            .then(async function (response) {
                 const { session, user } = response.data
 
                 if (session && user) {
-                    login(session, user)
+                    await login(session, user)
                     message.success('Login realizado com sucesso!')
-                    navigate("/settings", { replace: true })
+                    navigate("/dashboard", { replace: true })
                 } else {
                     message.error('Resposta de login inválida do servidor.')
                 }
