@@ -16,8 +16,8 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-    login: (session: Session, user: User) => void;
-    logout: () => void;
+    login: (session: Session, user: User) => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -25,8 +25,8 @@ export const AuthContext = createContext<AuthContextType>({
     session: null,
     isAuthenticated: false,
     isLoading: true,
-    login: () => { },
-    logout: () => { },
+    login: async () => { },
+    logout: async () => { },
 });
 
 interface AuthProviderProps {
@@ -40,22 +40,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        try {
-            const storedSession = localStorage.getItem(`sb-${import.meta.env.VITE_SUPABASE_NAME}-auth-token`);
-            if (storedSession) {
-                const parsedSession: Session = JSON.parse(storedSession);
-                setSession(parsedSession);
-                setUser(parsedSession.user || null);
-                setIsAuthenticated(!!parsedSession.access_token);
-            }
-        } catch (error) {
-            console.error("Erro ao carregar sessão do localStorage:", error);
-            localStorage.removeItem(`sb-${import.meta.env.VITE_SUPABASE_NAME}-auth-token`);
-        } finally {
-            // setIsLoading(false)
-        }
-
-
         const { data: {subscription} } = supabase.auth.onAuthStateChange(
             (event, session) => {
                 console.log('Supabase Auth State Change:', event)
