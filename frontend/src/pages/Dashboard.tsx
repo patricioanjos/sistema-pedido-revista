@@ -7,6 +7,7 @@ import { calculateTotalCopies } from "../utils/calculateCopies";
 import { CodeSandboxOutlined, ReadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import Header from "../components/Header";
 
 dayjs.extend(quarterOfYear); // dayjs com o plugin de trimestre
 
@@ -223,6 +224,8 @@ export default function Dashboard() {
 
     return (
         <main className="min-h-screen">
+            <Header />
+
             <Title level={2} className="m-0 leading-[64px] text-center">
                 Pedidos de Revistas
             </Title>
