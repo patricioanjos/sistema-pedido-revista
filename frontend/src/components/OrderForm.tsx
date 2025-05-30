@@ -1,6 +1,8 @@
 import { EnvironmentOutlined, HomeOutlined, NumberOutlined, PhoneOutlined, ReadOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, message } from 'antd';
 import axios from 'axios'
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface OrderData {
     region: string
@@ -12,13 +14,19 @@ interface OrderData {
 }
 
 export default function OrderForm() {
+    const navigate = useNavigate()
     const [form] = Form.useForm()
+
+    useEffect(() => {
+        localStorage.removeItem(`${import.meta.env.VITE_ORDERITEM}`)
+    })
 
     const onHandleFinish = (values: OrderData) => {
         axios.post(`${import.meta.env.VITE_BASE_URL}/orders`, values)
             .then(function (response) {
                 console.log(response.data);
-                message.success('Pedido realizado com sucesso!');
+                localStorage.setItem(`${import.meta.env.VITE_ORDERITEM}`, 'true')
+                navigate('/success')
                 form.resetFields();
             })
             .catch(function (error) {
@@ -33,7 +41,6 @@ export default function OrderForm() {
             onFinish={onHandleFinish}
             layout="vertical"
             initialValues={{ magazines: [{}] }}
-        // className='space-y-6'
         >
             
             <Form.Item
