@@ -53,7 +53,7 @@ export default function MagazineOrderCard({ order }: MagazineOrderCardProps) {
             order.itens_pedido.map((item, index: number) => (
               <div key={item.id || index} className="flex items-center justify-between mb-2">
                 <div>
-                  <Text strong className="text-base capitalize">{item.magazine}</Text>
+                  <Text strong className="text-base capitalize">{item.magazine.replace(/_/g, ' ')}</Text>
                 </div>
                 <div className="text-right">
                   <Text strong className="text-lg">{item.quantity}</Text>
