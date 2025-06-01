@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import MagazineOrderCard from "../components/MagazineOrderCard";
 import axios from "axios";
 import type { Order } from "../types";
@@ -8,6 +8,7 @@ import { CodeSandboxOutlined, ReadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import Header from "../components/Header";
+import { AuthContext } from "../context/AuthContext";
 
 dayjs.extend(quarterOfYear); // dayjs com o plugin de trimestre
 
@@ -21,6 +22,7 @@ const currentYear = dayjs().year();
 const currentQuarter = dayjs().quarter(); // Q1, Q2, Q3, Q4
 
 export default function Dashboard() {
+    const { session } = useContext(AuthContext)
     const [allOrders, setAllOrders] = useState<Order[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
@@ -35,7 +37,9 @@ export default function Dashboard() {
             try {
                 setError(null); // Limpa erros anteriores
 
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/orders`);
+                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/orders`, {
+                    headers: { 'Authorization': `Bearer ${session?.access_token}` }
+                });
 
                 // Verifica se a resposta tem dados antes de definir
                 if (response.data) {
@@ -45,7 +49,7 @@ export default function Dashboard() {
                 }
             } catch (err: any) {
                 console.error("Erro ao buscar pedidos:", err);
-                setError(err.message || "Ocorreu um erro ao buscar os pedidos.");
+                setError(err.response.data.message || "Ocorreu um erro ao buscar os pedidos.");
             } finally {
                 setLoading(false)
             }
