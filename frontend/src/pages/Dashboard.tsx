@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import MagazineOrderCard from "../components/MagazineOrderCard";
 import axios from "axios";
 import type { Order } from "../types";
-import { Alert, Collapse, Layout, Select, Space, Spin, Typography, type CollapseProps } from "antd";
+import { Alert, Collapse, Layout, Select, Spin, Typography, type CollapseProps } from "antd";
 import { calculateTotalCopies } from "../utils/calculateCopies";
 import { CodeSandboxOutlined, ReadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -230,31 +230,33 @@ export default function Dashboard() {
         <main className="min-h-screen">
             <Header />
 
-            <Title level={2} className="m-0 leading-[64px] text-center">
+            <Title level={2} className="leading-[64px] text-center">
                 Pedidos de Revistas
             </Title>
 
 
             <Content>
                 {/* Filtros de Ano e Trimestre */}
-                <div className="flex flex-col sm:flex-row gap-4 my-8 items-center justify-center">
-                    <Space size="middle">
+                <section className="flex flex-col md:flex-row gap-4 mt-8 items-center justify-center mx-5">
+                    <div className="w-full">
                         <Text strong>Ano:</Text>
                         <Select
                             value={selectedYear}
                             onChange={(value: number) => setSelectedYear(value)}
                             options={yearOptions}
-                            style={{ width: 120 }}
+                            className="w-full"
                         />
+                    </div>
+                    <div className="w-full">
                         <Text strong>Trimestre:</Text>
                         <Select
                             value={selectedQuarter}
                             onChange={(value: string) => setSelectedQuarter(value)}
                             options={quarterOptions}
-                            style={{ width: 150 }}
+                            className="w-full"
                         />
-                    </Space>
-                </div>
+                    </div>
+                </section>
 
                 {filteredOrders?.length ? (
                     <Collapse
