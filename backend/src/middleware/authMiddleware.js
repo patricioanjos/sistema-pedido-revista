@@ -1,4 +1,9 @@
-import { supabase } from "../../db.js";
+// import { supabase } from "../../db.js";
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { createClient } from "@supabase/supabase-js";
+
 
 export const verifyAutheticationToken = async (req, res, next) => {
   let token
@@ -7,9 +12,18 @@ export const verifyAutheticationToken = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1]; // Formato: "Bearer TOKEN"
 
+      // instância do cliente Supabase ESPECÍFICA para esta requisição
+      const supabaseClientForRequest = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {
+          auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+          }
+      });
+
       // O método abaixo (`getUser(token)`) é usado para obter o usuário associado a um JWT.
       // Se o token for inválido ou expirado, ele retornará erro ou null.
-      const { data: { user }, error } = await supabase.auth.getUser(token)
+      const { data: { user }, error } = await supabaseClientForRequest.auth.getUser(token)
 
       if (error || !user) {
         console.error('Erro de autenticação (JWT inválido ou expirado):', error?.message || 'Usuário não encontrado.')
@@ -17,6 +31,7 @@ export const verifyAutheticationToken = async (req, res, next) => {
       }
 
       req.user = user // Anexe o usuário ao objeto de requisição
+      req.supabaseClient = supabaseClientForRequest
       next();
     } catch (error) {
       console.error('Erro no middleware de autenticação:', error.message)

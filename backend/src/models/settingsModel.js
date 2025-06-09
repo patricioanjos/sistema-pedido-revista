@@ -1,4 +1,4 @@
-import sql, { supabase } from '../../db.js';
+import sql from '../../db.js';
 
 export const settingsModel = {
     async getOrderingStatus() {
@@ -9,20 +9,19 @@ export const settingsModel = {
         return result[0]?.is_ordering_enabled ?? true
     },
 
-    async updateOrderingStatus(enabled) {
-        const {data, error} = await supabase
+    async updateOrderingStatus(enabled, supabaseClient) {
+        console.log(`enabled vindo do usuário: ${enabled}`)
+        const { data, error } = await supabaseClient
             .from('settings')
             .update({ is_ordering_enabled: enabled })
             .eq('id', 1)
             .select()
-        
+
         if (error) {
             console.error('Erro Supabase ao atualizar status de pedidos no Model:', error);
             throw new Error(`Falha no banco de dados ao atualizar status: ${error.message}`);
         }
-
-        console.log(error)
-
+        
         return data
     }
 }
