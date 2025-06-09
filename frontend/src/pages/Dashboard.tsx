@@ -2,13 +2,14 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import MagazineOrderCard from "../components/MagazineOrderCard";
 import axios from "axios";
 import type { Order } from "../types";
-import { Alert, Collapse, Layout, Select, Spin, Typography, type CollapseProps } from "antd";
+import { Alert, Button, Collapse, Layout, Select, Spin, Typography, type CollapseProps } from "antd";
 import { calculateTotalCopies } from "../utils/calculateCopies";
 import { CodeSandboxOutlined, ReadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import Header from "../components/Header";
 import { AuthContext } from "../context/AuthContext";
+import { useOrderingStatus } from "../context/OrderingStatusContext";
 
 dayjs.extend(quarterOfYear); // dayjs com o plugin de trimestre
 
@@ -31,6 +32,8 @@ export default function Dashboard() {
     // Se o usuário quer ver os pedidos do "2º Trimestre", ele está olhando para pedidos feitos no Q1.
     // Assim, o trimestre padrão a ser exibido no select para o usuário é o trimestre atual de revistas.
     const [selectedQuarter, setSelectedQuarter] = useState<string>(`T${currentQuarter + 1}`);
+
+    const {isOrderingEnabled, toogleOrderingStatus} = useOrderingStatus()
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -257,6 +260,15 @@ export default function Dashboard() {
                         />
                     </div>
                 </section>
+
+                <div className="ml-5 mt-2 mb-6">
+                    <Button onClick={() => toogleOrderingStatus(!isOrderingEnabled)} color={isOrderingEnabled ? "red" : "default"} variant="solid">
+                        {isOrderingEnabled ? "Desativar Pedidos" : "Ativar Pedidos"}
+                    </Button>
+                    <span className="text-sm mx-2">
+                        Pedidos estão atualmente {isOrderingEnabled ? "ATIVOS" : "DESATIVADOS"}
+                    </span>
+                </div>
 
                 {filteredOrders?.length ? (
                     <Collapse

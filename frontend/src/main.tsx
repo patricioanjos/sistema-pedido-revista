@@ -4,12 +4,15 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import Router from './router/index.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
+import { OrderingStatusProvider } from './context/OrderingStatusContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <Router />
+        <OrderingStatusProvider>
+          <Router />
+        </OrderingStatusProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
