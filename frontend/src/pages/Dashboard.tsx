@@ -1,26 +1,21 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import MagazineOrderCard from "../components/MagazineOrderCard";
 import axios from "axios";
 import type { Order } from "../types";
-import { Alert, Button, Collapse, Layout, Select, Spin, Typography, type CollapseProps } from "antd";
+import { Button, Layout, Typography, } from "antd";
 import { calculateTotalCopies } from "../utils/calculateCopies";
-import { CodeSandboxOutlined, ReadOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
-import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import Header from "../components/Header";
 import { AuthContext } from "../context/AuthContext";
 import { useOrderingStatus } from "../context/OrderingStatusContext";
+import { currentQuarter, currentYear } from "../utils/getYearAndQuarter";
+import SelectForFilter from "../components/SelectForFilter";
+import OrdersCollapse from "../components/OrdersCollapse";
+import dayjs from "dayjs";
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 
 dayjs.extend(quarterOfYear); // dayjs com o plugin de trimestre
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Content } = Layout;
-
-const currentYear = dayjs().year();
-
-// Se estamos no Q2, os pedidos foram feitos no Q1, para o Q2.
-// Se queremos ver o '2º Trimestre' na UI, a data do pedido é do '1º Trimestre'.
-const currentQuarter = dayjs().quarter(); // Q1, Q2, Q3, Q4
 
 export default function Dashboard() {
     const { session } = useContext(AuthContext)
@@ -33,7 +28,7 @@ export default function Dashboard() {
     // Assim, o trimestre padrão a ser exibido no select para o usuário é o trimestre atual de revistas.
     const [selectedQuarter, setSelectedQuarter] = useState<string>(`T${currentQuarter + 1}`);
 
-    const {isOrderingEnabled, toogleOrderingStatus} = useOrderingStatus()
+    const { isOrderingEnabled, toogleOrderingStatus } = useOrderingStatus()
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -60,22 +55,6 @@ export default function Dashboard() {
 
         fetchOrders();
     }, []); // Array de dependências vazio: executa apenas uma vez no montante do componente
-
-    const yearOptions = useMemo(() => {
-        const years = [];
-        for (let i = 2025; i <= currentYear + 1; i++) {
-            years.push({ value: i, label: String(i) });
-        }
-        return years;
-    }, [currentYear]);
-
-    // Opções de trimestres
-    const quarterOptions = [
-        { value: 'T1', label: '1º Trimestre' }, // Pedidos feitos no Q4 do ano anterior
-        { value: 'T2', label: '2º Trimestre' },
-        { value: 'T3', label: '3º Trimestre' },
-        { value: 'T4', label: '4º Trimestre' },
-    ];
 
     const filteredOrders = useMemo(() => {
         return allOrders.filter((order: Order) => {
@@ -119,115 +98,8 @@ export default function Dashboard() {
         });
     }, [allOrders, selectedYear, selectedQuarter])
 
-    const eastOrders = filteredOrders.filter((order) => order.region?.toLowerCase() === 'leste');
-    const northOrders = filteredOrders.filter((order) => order.region?.toLowerCase() === 'norte');
-    const southOrders = filteredOrders.filter((order) => order.region?.toLowerCase() === 'sul');
-
-    const totalEastMagazinesCopies = calculateTotalCopies(eastOrders)
-    const totalNorthMagazinesCopies = calculateTotalCopies(northOrders)
-    const totalSouthMagazinesCopies = calculateTotalCopies(southOrders)
     const totalMagazinesCopies = calculateTotalCopies(filteredOrders)
-
-    // Calcular totais para o cabeçalho
     const totalOrdersCount = filteredOrders.length;
-
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex justify-center items-center">
-                <Spin size="large" />
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen p-10">
-                <Alert
-                    message="Erro ao carregar dados"
-                    description={`Não foi possível carregar os pedidos: ${error}`}
-                    type="error"
-                    showIcon
-                />
-            </div>
-        );
-    }
-
-    // Criação dos itens do Collapse manualmente para cada região
-    const collapseItems: CollapseProps['items'] = [
-
-        {
-            key: 'leste',
-            label: (
-                <div className="flex justify-between items-center h-16 px-3 bg-blue-50 border-2 border-blue-200 
-                rounded-lg">
-                    <h2 className="text-2xl font-semibold">Região Leste</h2>
-                    <div className="space-x-4 text-gray-500 text-base">
-                        <span><CodeSandboxOutlined />{eastOrders.length} Pedidos</span>
-                        <span><ReadOutlined /> {totalEastMagazinesCopies} Cópias</span>
-                    </div>
-                </div>
-            ),
-            children: (
-                eastOrders?.length ? (
-                    <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
-                        {eastOrders.map((order: Order) => (
-                            <MagazineOrderCard order={order} key={order.id} />
-                        ))}
-                    </section>
-                ) : <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="ml-6" />
-            ),
-            className: 'mb-4',
-        },
-
-        {
-            key: 'norte',
-            label: (
-                <div className="flex justify-between items-center h-16 px-3 bg-green-50 border-2 border-green-200 
-                rounded-lg">
-                    <h2 className="text-2xl font-semibold">Região Norte</h2>
-                    <div className="space-x-4 text-gray-500 text-base">
-                        <span><CodeSandboxOutlined />{northOrders.length} Pedidos</span>
-                        <span><ReadOutlined /> {totalNorthMagazinesCopies} Cópias</span>
-                    </div>
-                </div>
-            ),
-            children: (
-                northOrders?.length ? (
-                    <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
-                        {northOrders.map((order: Order) => (
-                            <MagazineOrderCard order={order} key={order.id} />
-                        ))}
-                    </section>
-                ) : <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="ml-6" />
-            ),
-            className: 'mb-4',
-        },
-
-        {
-            key: 'sul',
-            label: (
-                <div className="flex justify-between items-center h-16 px-3 bg-orange-50 border-2 border-orange-200 
-                rounded-lg">
-                    <h2 className="text-2xl font-semibold">Região Sul</h2>
-                    <div className="space-x-4 text-gray-500 text-base">
-                        <span><CodeSandboxOutlined />{southOrders.length} Pedidos</span>
-                        <span><ReadOutlined /> {totalSouthMagazinesCopies} Cópias</span>
-                    </div>
-                </div>
-            ),
-            children: (
-                southOrders?.length ? (
-                    <section className="grid lg:grid-cols-2 gap-x-8 pl-6">
-                        {southOrders.map((order: Order) => (
-                            <MagazineOrderCard order={order} key={order.id} />
-                        ))}
-                    </section>
-                ) : <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="ml-6" />
-            ),
-            className: 'mb-4',
-        },
-    ].filter(Boolean) as CollapseProps['items']
 
     return (
         <main className="min-h-screen">
@@ -240,26 +112,12 @@ export default function Dashboard() {
 
             <Content>
                 {/* Filtros de Ano e Trimestre */}
-                <section className="flex flex-col md:flex-row gap-4 mt-8 items-center justify-center mx-5">
-                    <div className="w-full">
-                        <Text strong>Ano:</Text>
-                        <Select
-                            value={selectedYear}
-                            onChange={(value: number) => setSelectedYear(value)}
-                            options={yearOptions}
-                            className="w-full"
-                        />
-                    </div>
-                    <div className="w-full">
-                        <Text strong>Trimestre:</Text>
-                        <Select
-                            value={selectedQuarter}
-                            onChange={(value: string) => setSelectedQuarter(value)}
-                            options={quarterOptions}
-                            className="w-full"
-                        />
-                    </div>
-                </section>
+                <SelectForFilter 
+                    selectedYear={selectedYear}
+                    setSelectedYear={setSelectedYear}
+                    selectedQuarter={selectedQuarter}
+                    setSelectedQuarter={setSelectedQuarter}
+                />
 
                 <div className="ml-5 mt-2 mb-6">
                     <Button onClick={() => toogleOrderingStatus(!isOrderingEnabled)} color={isOrderingEnabled ? "red" : "default"} variant="solid">
@@ -270,14 +128,12 @@ export default function Dashboard() {
                     </span>
                 </div>
 
-                {filteredOrders?.length ? (
-                    <Collapse
-                        items={collapseItems}
-                        ghost
-                    />
-                ) : (
-                    <Alert message="Nenhum pedido encontrado para exibir." type="info" showIcon className="mt-8" />
-                )}
+                <OrdersCollapse 
+                    allOrders={allOrders}
+                    filteredOrders={filteredOrders}
+                    loading={loading}
+                    error={error}
+                />
 
                 <section className="mt-12 mx-4 p-6 bg-gray-100 rounded-lg">
                     <h3 className="text-lg font-semibold mb-4">Resumo do Trimestre</h3>
