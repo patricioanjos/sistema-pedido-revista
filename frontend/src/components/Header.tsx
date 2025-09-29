@@ -33,7 +33,7 @@ export default function Header() {
                         </div>
                     ) : (
                         <Link to={'/login'}>
-                            Login
+                            <Button className="bg-blue-500 text-white">Login</Button>
                         </Link>
                     )}
                 </>
